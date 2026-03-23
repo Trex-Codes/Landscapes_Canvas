@@ -1,393 +1,221 @@
-var canvas = document.getElementById('CanvasJS');
-var ctx = canvas.getContext("2d");
+const canvas = document.getElementById('CanvasJS');
+const ctx = canvas.getContext("2d");
 
-ctx.beginPath();
-var gradient = ctx.createLinearGradient(0, 150, 0, 730);
-gradient.addColorStop(0,"rgba(28, 130, 226)");
-gradient.addColorStop(1,"white");
-ctx.fillStyle = gradient;
-ctx.fillRect(0, 0, canvas.width, canvas.height);
-ctx.closePath();
+let width, height;
+let mouse = { x: 0, y: 0 };
+let time = 0;
 
-// -----------------------------------------------
-// -----------------------------------------------
+function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+}
 
-// MONTAÑAS (1)
+window.addEventListener('resize', resize);
+window.addEventListener('mousemove', (e) => {
+    mouse.x = (e.clientX / width) - 0.5;
+    mouse.y = (e.clientY / height) - 0.5;
+});
 
-// (1)
-ctx.beginPath();
-ctx.strokeStyle = "grey";
-// ctx.fillStyle = "rgb(124, 75, 231)";
-ctx.fillStyle = "rgba(124, 75, 231)";
-ctx.moveTo(0, 546);
-ctx.lineTo(317, 182);
-ctx.lineTo(632, 546);
-ctx.lineTo(0, 546);
-ctx.stroke();
-ctx.fill();
-ctx.closePath();
+resize();
 
-// (2)
-ctx.beginPath();
-// ctx.fillStyle = "rgb(83, 14, 235)";
-ctx.fillStyle = "rgba(83, 14, 235)";
-ctx.moveTo(317, 546);
-ctx.lineTo(632, 182);
-ctx.lineTo(948, 546);
-ctx.lineTo(317, 546);
-ctx.stroke();
-ctx.fill();
-ctx.closePath();
+class Cloud {
+    constructor() {
+        this.reset();
+    }
+    reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height * 0.4;
+        this.speed = 0.2 + Math.random() * 0.5;
+        this.size = 20 + Math.random() * 40;
+    }
+    update() {
+        this.x += this.speed;
+        if (this.x - this.size * 2 > width) this.x = -this.size * 2;
+    }
+    draw() {
+        ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.arc(this.x + this.size * 0.6, this.y - this.size * 0.3, this.size * 0.7, 0, Math.PI * 2);
+        ctx.arc(this.x + this.size * 1.2, this.y, this.size * 0.8, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
 
-// (3)
-ctx.beginPath();
-// ctx.fillStyle = "rgb(83, 14, 235)";
-ctx.fillStyle = "rgba(83, 14, 235)";
-ctx.moveTo(948, 546);
-ctx.lineTo(1264, 182);
-ctx.lineTo(1585, 546);
-ctx.lineTo(948, 546);
-ctx.stroke();	
-ctx.fill();	
-ctx.closePath();	
+class Firefly {
+    constructor() {
+        this.reset();
+    }
+    reset() {
+        this.x = Math.random() * width;
+        this.y = height * 0.6 + Math.random() * (height * 0.4);
+        this.vx = (Math.random() - 0.5) * 1;
+        this.vy = (Math.random() - 0.5) * 1;
+        this.size = 1 + Math.random() * 2;
+        this.life = Math.random();
+    }
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life += 0.01;
+        if (this.x < 0 || this.x > width || this.y < height * 0.6 || this.y > height) this.reset();
+    }
+    draw() {
+        const opacity = Math.abs(Math.sin(this.life));
+        ctx.fillStyle = `rgba(250, 240, 100, ${opacity * 0.8})`;
+        ctx.shadowBlur = 10 * opacity;
+        ctx.shadowColor = "yellow";
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+}
 
+const clouds = Array.from({ length: 8 }, () => new Cloud());
+const fireflies = Array.from({ length: 25 }, () => new Firefly());
 
-// (4)
-ctx.beginPath();
-ctx.strokeStyle = "grey";
-// ctx.fillStyle = "rgb(124, 75, 231)";
-ctx.fillStyle = "rgba(124, 75, 231)";
-ctx.moveTo(632, 546);
-ctx.lineTo(948, 182);
-ctx.lineTo(1264, 546);
-ctx.lineTo(632, 546);
-ctx.stroke();
-ctx.fill();
-ctx.closePath();
+function drawMountain(x, y, w, h, color, SnowLayer = true, flip = false) {
+    const parallaxX = x + mouse.x * (h / 10);
+    const direction = flip ? 1 : -1;
 
+    ctx.beginPath();
+    ctx.fillStyle = color;
+    ctx.moveTo(parallaxX, y);
+    ctx.lineTo(parallaxX + w / 2, y + (h * direction));
+    ctx.lineTo(parallaxX + w, y);
+    ctx.fill();
 
-// -----------------------------------------------
-// -----------------------------------------------
+    if (SnowLayer) {
+        ctx.beginPath();
+        ctx.fillStyle = flip ? "rgba(255, 255, 255, 0.3)" : "rgba(255, 255, 255, 0.9)";
+        ctx.moveTo(parallaxX + w / 2 - w * 0.1, y + (h * 0.8 * direction));
+        ctx.lineTo(parallaxX + w / 2, y + (h * direction));
+        ctx.lineTo(parallaxX + w / 2 + w * 0.1, y + (h * 0.8 * direction));
+        ctx.lineTo(parallaxX + w / 2, y + (h * 0.7 * direction));
+        ctx.fill();
+    }
+}
 
-// TRIANGULOS MEDIOS (MOUNTAINS)
+function drawTree(x, y, scale = 1, flip = false) {
+    const px = x + mouse.x * (40 * scale);
+    const py = y + mouse.y * (10);
+    const direction = flip ? -1 : 1;
+    
+    // Trunk
+    ctx.fillStyle = flip ? "rgba(69, 26, 3, 0.3)" : "#451a03";
+    ctx.fillRect(px - 5 * scale, py, 10 * scale, 20 * scale * direction);
 
-		// (1)
-		ctx.beginPath();	
-		ctx.fillStyle = "rgba(251, 252, 253)";
-		ctx.strokeStyle = "rgba(251, 252, 253)";
-		ctx.moveTo(237, 274);
-		ctx.lineTo(317, 455);
-		ctx.lineTo(317, 182);
-		ctx.lineTo(237, 274);
-		ctx.stroke();
-		ctx.fill();
-		ctx.closePath();
+    // Leaves
+    ctx.fillStyle = flip ? "rgba(6, 78, 59, 0.3)" : "#064e3b";
+    for (let i = 0; i < 3; i++) {
+        ctx.beginPath();
+        ctx.moveTo(px - 20 * scale, py - (10 * i) * scale * direction);
+        ctx.lineTo(px + 20 * scale, py - (10 * i) * scale * direction);
+        ctx.lineTo(px, py - (25 + 15 * i) * scale * direction);
+        ctx.fill();
+    }
+}
 
-			// (1.1)
-			ctx.beginPath();
-			ctx.fillStyle = "rgba(211, 222, 232)";
-			ctx.strokeStyle = "rgba(211, 222, 232)";
-			ctx.moveTo(317, 455);
-			ctx.lineTo(395, 274);
-			ctx.lineTo(317, 182);
-			ctx.lineTo(317, 364);
-			ctx.stroke();
-			ctx.fill();
-			ctx.closePath();
+function drawLandscape(isReflection = false) {
+    const yBase = height * 0.75;
+    
+    if (!isReflection) {
+        // Distant Mountains
+        drawMountain(width * -0.1, yBase, width * 0.5, height * 0.4, "#312e81", true);
+        drawMountain(width * 0.6, yBase, width * 0.6, height * 0.5, "#1e1b4b", true);
+        drawMountain(width * 0.2, yBase, width * 0.6, height * 0.6, "#3730a3", true);
+    } else {
+        // Mirrored Mountains
+        ctx.save();
+        ctx.globalAlpha = 0.4;
+        drawMountain(width * -0.1, yBase, width * 0.5, height * 0.4, "#312e81", true, true);
+        drawMountain(width * 0.6, yBase, width * 0.6, height * 0.5, "#1e1b4b", true, true);
+        drawMountain(width * 0.2, yBase, width * 0.6, height * 0.6, "#3730a3", true, true);
+        ctx.restore();
+    }
+}
 
+function drawLake() {
+    const lakeTop = height * 0.75;
+    
+    // Draw Reflection
+    drawLandscape(true);
+    
+    // Water Overlay
+    const gradient = ctx.createLinearGradient(0, lakeTop, 0, height);
+    gradient.addColorStop(0, "rgba(14, 165, 233, 0.6)");
+    gradient.addColorStop(1, "rgba(2, 132, 199, 0.8)");
+    
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.moveTo(0, lakeTop);
+    
+    for (let x = 0; x <= width; x += 10) {
+        const wave = Math.sin(x * 0.05 + time * 2) * 2;
+        ctx.lineTo(x, lakeTop + wave);
+    }
+    
+    ctx.lineTo(width, height);
+    ctx.lineTo(0, height);
+    ctx.fill();
 
-		// (2)
-		ctx.beginPath();	
-		ctx.fillStyle = "rgba(251, 252, 253)";
-		ctx.strokeStyle = "rgba(251, 252, 253)";
-		ctx.moveTo(553, 274);
-		ctx.lineTo(632, 455);
-		ctx.lineTo(711, 274);
-		ctx.lineTo(632, 182);
-		ctx.lineTo(553, 274);
-		ctx.stroke();
-		ctx.fill();
-		ctx.closePath();
+    // Specular Highlights
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+    for (let i = 0; i < 5; i++) {
+        ctx.beginPath();
+        const yPos = lakeTop + 20 + i * 40;
+        ctx.moveTo(0, yPos);
+        for (let x = 0; x <= width; x += 40) {
+            const wave = Math.sin(x * 0.02 + time + i) * 10;
+            ctx.lineTo(x, yPos + wave);
+        }
+        ctx.stroke();
+    }
+}
 
-			// (2.2)
-			ctx.beginPath();
-			ctx.fillStyle = "rgba(211, 222, 232)";
-			ctx.strokeStyle = "rgba(211, 222, 232)";
-			ctx.moveTo(632, 455);
-			ctx.lineTo(711, 274);
-			ctx.lineTo(632, 182);
-			ctx.lineTo(632, 364);
-			ctx.stroke();
-			ctx.fill();
-			ctx.closePath();
+function animate() {
+    time += 0.016;
+    ctx.clearRect(0, 0, width, height);
 
-		// (3)
-		ctx.beginPath();	
-		ctx.fillStyle = "rgba(251, 252, 253)";
-		ctx.strokeStyle = "rgba(251, 252, 253)";
-		ctx.moveTo(869, 274);
-		ctx.lineTo(948, 455);
-		ctx.lineTo(948, 182);
-		ctx.lineTo(869, 274);
-		ctx.stroke();
-		ctx.fill();
-		ctx.closePath();
+    // Sky
+    const skyGradient = ctx.createLinearGradient(0, 0, 0, height);
+    skyGradient.addColorStop(0, "#0f172a");
+    skyGradient.addColorStop(0.5, "#1e1b4b");
+    skyGradient.addColorStop(1, "#312e81");
+    ctx.fillStyle = skyGradient;
+    ctx.fillRect(0, 0, width, height);
 
-			// (3.3)
-			ctx.beginPath();
-			ctx.fillStyle = "rgba(211, 222, 232)";
-			ctx.strokeStyle = "rgba(211, 222, 232)";
-			ctx.moveTo(948, 455)
-			ctx.lineTo(1027, 274);
-			ctx.lineTo(948, 182);
-			ctx.lineTo(948, 455);
-			ctx.stroke();
-			ctx.fill();
-			ctx.closePath();
+    // Moon
+    ctx.fillStyle = "#fef08a";
+    ctx.shadowBlur = 80;
+    ctx.shadowColor = "rgba(254, 240, 138, 0.4)";
+    ctx.beginPath();
+    ctx.arc(width * 0.8, height * 0.2, 40, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
 
-		// (4)
-		ctx.beginPath();	
-		ctx.fillStyle = "rgba(251, 252, 253)";
-		ctx.strokeStyle = "rgba(251, 252, 253)";
-		ctx.moveTo(1185, 274);
-		ctx.lineTo(1264, 455);
-		ctx.lineTo(1264, 182);
-		ctx.lineTo(1185, 274);
-		ctx.stroke();
-		ctx.fill();
-		ctx.closePath();
+    clouds.forEach(c => {
+        c.update();
+        c.draw();
+    });
 
-			// (4.4)
-			ctx.beginPath();
-			ctx.fillStyle = "rgba(211, 222, 232)";
-			ctx.strokeStyle = "rgba(211, 222, 232)";
-			ctx.moveTo(1264, 455);
-			ctx.lineTo(1343, 274);
-			ctx.lineTo(1264, 182);
-			ctx.lineTo(1264, 364);
-			ctx.stroke();
-			ctx.fill();
-			ctx.closePath();
+    drawLandscape(false);
+    drawLake();
 
+    // Fireflies
+    fireflies.forEach(f => {
+        f.update();
+        f.draw();
+    });
 
-// -----------------------------------------------
-// -----------------------------------------------
+    // Trees
+    drawTree(width * 0.1, height * 0.82, 1.2);
+    drawTree(width * 0.9, height * 0.78, 0.8);
+    drawTree(width * 0.75, height * 0.92, 1.8);
 
-// LAGO 
-ctx.beginPath();
-ctx.fillStyle = "rgba(75, 192, 254)";
-ctx.strokeStyle = "black";
-ctx.moveTo(1106, 638);
-ctx.lineTo(948, 546);
-ctx.lineTo(632, 546);
-ctx.lineTo(158, 638);
-ctx.lineTo(158, 730);
-ctx.lineTo(1106, 730);
-ctx.lineTo(1106, 638);
-ctx.stroke();
-ctx.fill();
-ctx.closePath();
+    requestAnimationFrame(animate);
+}
 
-// -----------------------------------------------
-// -----------------------------------------------
-
-// FGURAS LATERALES 
-
-// (Derecha) (1)
-ctx.beginPath();
-ctx.fillStyle = "rgb(0, 19, 127)";
-ctx.moveTo(317, 455);
-ctx.lineTo(632, 546);
-ctx.lineTo(317, 607);
-ctx.stroke();
-ctx.fill();
-ctx.closePath();
-
-	// (Derecha) (1.1)
-	ctx.beginPath();
-	ctx.fillStyle = "rgba(32, 20, 178)";
-	ctx.moveTo(158, 638);
-	ctx.lineTo(158, 546);
-	ctx.lineTo(317, 455);
-	ctx.lineTo(317, 608);
-	ctx.stroke();
-	ctx.fill();
-	ctx.closePath();
-
-// (izquierda) (2)
-ctx.beginPath();
-ctx.fillStyle = "rgba(32, 20, 178)";
-ctx.lineTo(948, 546);
-ctx.lineTo(1264, 455);
-ctx.lineTo(1264, 638);
-ctx.lineTo(1106, 638);
-ctx.stroke();
-ctx.fill();
-ctx.closePath();
-
-	// (Izquierda) (2.2)
-	ctx.beginPath();
-	ctx.fillStyle = "rgb(0, 19, 127)";
-	ctx.moveTo(1264, 455);
-	ctx.lineTo(1422, 500);
-	ctx.lineTo(1264, 545);
-	ctx.stroke();
-	ctx.fill();
-	ctx.closePath();
-
-// -----------------------------------------------
-// -----------------------------------------------
-
-// ARBOLES
-// (1)
-ctx.beginPath();
-ctx.fillStyle = "rgb(138, 60, 29)";
-ctx.fillRect(1422, 420, 25, 95);
-ctx.stroke();
-ctx.closePath();
-
-			// RAMA 1
-			ctx.beginPath();
-			ctx.fillStyle = "rgba(24, 61, 1)";
-			ctx.strokeStyle = "rgba(24, 61, 1)";
-			ctx.lineTo(1422, 421);
-			ctx.lineTo(1343, 421);
-			ctx.lineTo(1371, 365);
-			ctx.lineTo(1473, 365);
-			ctx.lineTo(1503, 421);
-			ctx.lineTo(1422, 421);
-			ctx.stroke();
-			ctx.fill();
-			ctx.closePath();
-
-			// RAMA 2
-			ctx.beginPath();
-			ctx.fillStyle = "rgba(42, 96, 2)";
-			ctx.strokeStyle = "rgba(42, 96, 2)";
-			ctx.moveTo(1422, 365);
-			ctx.lineTo(1343, 365);
-			ctx.lineTo(1371, 309);
-			ctx.lineTo(1473, 309);
-			ctx.lineTo(1503, 365);
-			ctx.lineTo(1422, 365);
-			ctx.stroke();
-			ctx.fill();
-			ctx.closePath();
-
-			// RAMA FINAL (3)
-			ctx.beginPath();
-			ctx.fillStyle = "rgba(55, 138, 1)";
-			ctx.strokeStyle = "rgba(55, 138, 1)";
-			ctx.moveTo(1422, 309);
-			ctx.lineTo(1343, 309);
-			ctx.lineTo(1422, 182);
-			ctx.lineTo(1503, 309);
-			ctx.lineTo(1422, 309);
-			ctx.stroke();
-			ctx.fill();
-			ctx.closePath();
-
-// (2)
-ctx.beginPath();
-ctx.fillStyle = "rgb(138, 60, 29)";
-ctx.fillRect(158, 420, 25, 95);
-ctx.stroke();
-ctx.closePath();
-
-	
-	// rama circular posterior izquierda
-	ctx.beginPath();
-	ctx.fillStyle = "rgba(55, 138, 1)";
-	ctx.strokeStyle = "rgba(55, 138, 1)";
-	ctx.arc(115, 335, 60, 0, (Math.PI/180)*360);
-	ctx.stroke();
-	ctx.fill();
-	ctx.closePath();
-
-	// rama circular posterior derecha
-	ctx.beginPath();
-	ctx.fillStyle = "rgba(55, 138, 1)";
-	ctx.strokeStyle = "rgba(55, 138, 1)";
-	ctx.arc(200, 315, 65, 0, (Math.PI/180)*360);
-	ctx.stroke();
-	ctx.fill();
-	ctx.closePath();
-
-	// rama circular (PRIMARIA)
-	ctx.beginPath();
-	ctx.fillStyle = "rgba(42, 96, 2)";
-	ctx.strokeStyle = "rgba(42, 96, 2)";
-	ctx.arc(155, 350, 85, 0, (Math.PI/180)*360);
-	ctx.stroke();
-	ctx.fill();
-	ctx.closePath();
-
-	// rama circular Inferorior 
-	ctx.beginPath();
-	ctx.fillStyle = "rgba(24, 61, 1)";
-	ctx.fillStyle = "rgba(24, 61, 1)";
-	ctx.arc(190, 400, 45, 0, (Math.PI/180)*360);
-	ctx.stroke();
-	ctx.fill();
-	ctx.closePath();
-
-// -----------------------------------------------
-// -----------------------------------------------
-
-// MONTAÑAS CURVAS 
-// (1)
-ctx.beginPath();
-ctx.fillStyle = "rgba(56, 171, 40)";
-ctx.strokeStyle = "black";
-ctx.arc(65, 730, 280, 0, (Math.PI/180)*360);
-ctx.stroke();
-ctx.fill();
-ctx.closePath();
-
-ctx.beginPath();
-ctx.fillStyle = "rgba(42, 96, 2)";
-ctx.strokeStyle = "black";
-ctx.arc(1410, 900, 400, 0, (Math.PI/180)*360);
-ctx.stroke();
-ctx.fill();
-ctx.closePath();
-
-// -----------------------------------------------
-// -----------------------------------------------
-
-// Mini-Montañas CURVAS
-// IZQ - DER
-// (1)
-ctx.beginPath();
-ctx.fillStyle = "darkgreen";
-ctx.arc(35, 730, 35, 0, (Math.PI/180)*360);
-ctx.stroke();
-ctx.fill();
-ctx.closePath();
-
-// (2)
-ctx.beginPath();
-ctx.fillStyle = "darkgreen";
-ctx.arc(104, 730, 35, 0, (Math.PI/180)*360);
-ctx.stroke();
-ctx.fill();
-ctx.closePath();
-
-// (3)
-ctx.beginPath();
-ctx.fillStyle = "darkgreen";
-ctx.arc(173, 730, 35, 0, (Math.PI/180)*360);
-ctx.stroke();
-ctx.fill();
-ctx.closePath();
-
-// (4)
-ctx.beginPath();
-ctx.fillStyle = "darkgreen";
-ctx.arc(242, 730, 35, 0, (Math.PI/180)*360);
-ctx.stroke();
-ctx.fill();
-ctx.closePath();
-
-// (4)
-ctx.beginPath();
+animate();
+

@@ -1,16 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="author" content="Trex-Codes">
-	<meta name="description" content="Forest in Canvas design">
-	<meta name="keywords" content="Trex-Codes, Canvas, Forest, design, Forest design">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Forest Canvas</title>
+    <meta charset="UTF-8">
+    <meta name="author" content="Trex-Codes">
+    <meta name="description" content="Vibrant Landscape Canvas Design">
+    <meta name="keywords" content="Trex-Codes, Canvas, Landscape, Nature, Animation">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibrant Nature Canvas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            background: #0f172a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            font-family: 'Inter', sans-serif;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            color: white;
+            pointer-events: none;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .overlay h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .overlay p {
+            font-size: 1rem;
+            opacity: 0.8;
+            font-weight: 400;
+        }
+    </style>
 </head>
 <body>
-		<canvas style="border: 1px solid black;" id="CanvasJS" width="1585" height="730"></canvas>
+    <div class="overlay">
+        <h1>Vibrant Landscape</h1>
+        <p>Interactive Canvas Scene</p>
+    </div>
+    <canvas id="CanvasJS"></canvas>
 
-		<script type="text/javascript" src="Script.js"></script>
+    <script type="text/javascript" src="Script.js"></script>
 </body>
 </html>
