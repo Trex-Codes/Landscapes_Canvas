@@ -1,0 +1,28 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    background-color: #0f121b;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+}
+
+#CanvasAll {
+    width: 100%;
+    /* Keep the original proportion: 546 / 730 = ~ 75% */
+    height: 75vh;
+    display: block;
+}
+
+#CanvasDown {
+    width: 100%;
+    /* Keep the original proportion: 184 / 730 = ~ 25% */
+    height: 25vh;
+    display: block;
+}
