@@ -1,97 +1,79 @@
+window.drawSky = function(ctx, width, height, state) {
+    let color = state.skyColor;
+    let time = state.time;
+    let t = state.timeOfDay;
+    
+    // Parallax
+    let pX = state.mouseX * -15; 
+    let pY = state.mouseY * -10;
+    
+    // Time of day factors
+    let nightFactor = Math.max(0, -Math.cos((t - 12) * Math.PI / 12)); 
+    let peakSunset = Math.max(0, 1 - Math.abs(6 - t)/2) + Math.max(0, 1 - Math.abs(18 - t)/2);
+    
+    ctx.save();
+    ctx.translate(pX, pY);
+    
+    // Draw slightly outside bounds
+    let drawW = width + 50;
+    let drawH = height + 50;
+    let offsetX = -25;
+    let offsetY = -25;
 
-// BUTTON SUN WITH .ONCLICK; CHANGE STYLES CSS
-document.getElementById('Change_Object_Sky').onclick = function() {
+    let horizonY = height * 0.6; 
+    let gradient = ctx.createLinearGradient(0, 0, 0, horizonY);
+    
+    gradient.addColorStop(0, color);
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0.4)');
+    
+    ctx.fillStyle = gradient;
+    ctx.fillRect(offsetX, offsetY, drawW, drawH);
 
-	// const PaletteSun = document.getElementById('cuadroSun');
-	// Call of file Hidden_Palettes.js
-	PaletteSky.style.display = 'initial';
-	PaletteSky.style.visibility = 'visible';
+    // Sunset overlay
+    if (peakSunset > 0) {
+        let sunsetGrad = ctx.createLinearGradient(0, 0, 0, horizonY);
+        sunsetGrad.addColorStop(0, `rgba(150, 50, 0, 0)`);
+        sunsetGrad.addColorStop(1, `rgba(255, 100, 0, ${peakSunset * 0.8})`);
+        ctx.fillStyle = sunsetGrad;
+        ctx.fillRect(offsetX, offsetY, drawW, drawH);
+    }
+    
+    // Night overlay & Stars
+    if (nightFactor > 0) {
+        ctx.fillStyle = `rgba(5, 10, 25, ${nightFactor * 0.95})`; 
+        ctx.fillRect(offsetX, offsetY, drawW, drawH);
+        
+        ctx.fillStyle = `rgba(255, 255, 255, ${nightFactor})`;
+        for(let i=0; i<150; i++) {
+            let sx = (i * 1234.5) % drawW + offsetX;
+            let sy = (i * 5432.1) % (horizonY) + offsetY;
+            
+            // Twinkle effect
+            let twinkle = (Math.sin(time * 5 + i) + 1) / 2;
+            ctx.globalAlpha = nightFactor * twinkle;
+            
+            ctx.beginPath();
+            ctx.arc(sx, sy, (i%3)*0.6, 0, Math.PI*2);
+            ctx.fill();
+        }
+        ctx.globalAlpha = 1.0;
+    }
 
-	// Icons ::after
-	IconTop[4].style.display = 'initial';
-	IconTop[4].style.visibility = 'visible';
-}
-
-// ===============
-//  FIGURA DESIGN
-// ===============
-
-// Sky 
-
-function SkyDraw(color) {
-
-	// canvasHTML
-	document.getElementById('CanvasHTml').style.backgroundColor = color;
-}
-
-document.getElementById('SkyColor1').onclick = function() {
-	SkyDraw('#9FD5D1');
-}
-
-document.getElementById('SkyColor2').onclick = function() {
-	SkyDraw('#0FFFFF');
-}
-
-document.getElementById('SkyColor3').onclick = function() {
-	SkyDraw('#ffe4c4');
-}
-
-document.getElementById('SkyColor4').onclick = function() {
-	SkyDraw('#002FA7');
-}
-
-document.getElementById('SkyColor5').onclick = function() {
-	SkyDraw('#5f9ea0');
-}
-
-document.getElementById('SkyColor6').onclick = function() {
-	SkyDraw('#A51C30');
-}
-
-document.getElementById('SkyColor7').onclick = function() {
-	SkyDraw('#db7093');
-}
-
-document.getElementById('SkyColor8').onclick = function() {
-	SkyDraw('#808000');
-}
-
-document.getElementById('SkyColor9').onclick = function() {
-	SkyDraw('#f5fffa');
-}
-
-document.getElementById('SkyColor10').onclick = function() {
-	SkyDraw('#cd853f');
-}
-
-document.getElementById('SkyColor11').onclick = function() {
-	SkyDraw('#4169e1');
-}
-
-document.getElementById('SkyColor12').onclick = function() {
-	SkyDraw('#00ff7f');
-}
-
-document.getElementById('SkyColor13').onclick = function() {
-	SkyDraw('#FFDAB9');
-}
-
-document.getElementById('SkyColor14').onclick = function() {
-	SkyDraw('#bc8f8f');
-}
-
-document.getElementById('SkyColor15').onclick = function() {
-	SkyDraw('#90ee90');
-}
-
-document.getElementById('SkyColor16').onclick = function() {
-	SkyDraw('#EF7F1A');
-}
-
-document.getElementById('SkyColor17').onclick = function() {
-	SkyDraw('#B57EDC');
-}
-
-document.getElementById('SkyColor18').onclick = function() {
-	SkyDraw('#1C4C96');
+    // Clouds Animation
+    ctx.fillStyle = `rgba(255, 255, 255, ${0.6 * (1 - nightFactor * 0.7)})`; 
+    let numClouds = 6;
+    for(let i=0; i<numClouds; i++) {
+        let speedFactor = 10 + (i * 5);
+        let x = ((i * (width / numClouds) + time * speedFactor) % (drawW + 300)) - 150 + offsetX;
+        let y = 30 + (i * 25 % (horizonY - 100)) + offsetY;
+        let scale = 0.5 + (i * 0.1);
+        
+        ctx.beginPath();
+        ctx.arc(x, y, 30 * scale, 0, Math.PI * 2);
+        ctx.arc(x + 40 * scale, y - 10 * scale, 40 * scale, 0, Math.PI * 2);
+        ctx.arc(x + 80 * scale, y, 30 * scale, 0, Math.PI * 2);
+        ctx.arc(x + 40 * scale, y + 10 * scale, 35 * scale, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    ctx.restore();
 }

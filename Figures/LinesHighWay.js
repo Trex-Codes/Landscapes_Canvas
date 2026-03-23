@@ -1,226 +1,40 @@
+window.drawLines = function(ctx, width, height, state) {
+    let color = state.linesColor;
+    let time = state.time;
+    
+    // Use the 3D Vanishing point passed from Highway
+    let vX = state.vX || width / 2;
+    let vY = state.vY || height * 0.6;
+    let bottomCenter = width / 2;
 
-// BUTTON SUN WITH .ONCLICK; CHANGE STYLES CSS
-document.getElementById('Change_Object_LinesHigWa').onclick = function() {
+    ctx.fillStyle = color;
+    
+    let numLines = 8;
+    // Speed increases realistically
+    let speed = (time * 1.5) % 1; 
 
-	// const PaletteSun = document.getElementById('cuadroSun');
-	// Call of file Hidden_Palettes.js
-	PaletteHighWayLines.style.display = 'initial';
-	PaletteHighWayLines.style.visibility = 'visible';
+    for(let i=0; i<numLines; i++) {
+        let lineZ = (i + speed) / numLines; 
+        
+        let t1 = Math.pow(lineZ, 2);
+        let zEnd = Math.min(1.0, lineZ + (0.05 / (lineZ + 0.1)));
+        let t2 = Math.pow(zEnd, 2);
 
-	// Icons ::after
-	IconTop[3].style.display = 'initial';
-	IconTop[3].style.visibility = 'visible';
-}
+        let y1 = vY + t1 * (height - vY);
+        let y2 = vY + t2 * (height - vY);
 
-// ===============
-//  FIGURA DESIGN
-// ===============
+        // Calculate X offsets based on vanishing point line to bottom center
+        let cx1 = vX + t1 * (bottomCenter - vX);
+        let cx2 = vX + t2 * (bottomCenter - vX);
 
-// Highway Lines default
-// ROAD FRAMES
+        let w1 = 2 + t1 * 25;
+        let w2 = 2 + t2 * 25;
 
-// (1)
-ctx.beginPath();
-ctx.fillStyle = "#ffffffff";
-ctx.strokeStyle = "#000";
-ctx.moveTo(15, 515);
-ctx.lineTo(292, 515);
-ctx.lineTo(292, 565);
-ctx.lineTo(15, 565);
-ctx.lineTo(15, 515);
-ctx.stroke();
-ctx.fill();
-ctx.closePath();
-
-// (2)
-ctx.beginPath();
-ctx.fillStyle = "#ffffffff";
-ctx.strokeStyle = "#000";
-ctx.moveTo(342, 515);
-ctx.lineTo(609, 515);
-ctx.lineTo(609, 565);
-ctx.lineTo(342, 565);
-ctx.lineTo(342, 515);
-ctx.stroke();
-ctx.fill();
-ctx.closePath();
-
-// (3)
-ctx.beginPath();
-ctx.fillStyle = "#ffffffff";
-ctx.strokeStyle = "#000";
-ctx.moveTo(659, 515);
-ctx.lineTo(926, 515);
-ctx.lineTo(926, 565);
-ctx.lineTo(659, 565);
-ctx.lineTo(659, 515);
-ctx.stroke();
-ctx.fill();
-ctx.closePath();
-
-// (4)
-ctx.beginPath();
-ctx.fillStyle = "#ffffffff";
-ctx.strokeStyle = "#000";
-ctx.moveTo(976, 515);
-ctx.lineTo(1243, 515);
-ctx.lineTo(1243, 565);
-ctx.lineTo(976, 565);
-ctx.lineTo(976, 515);
-ctx.stroke();
-ctx.fill();
-ctx.closePath();
-
-// (5)
-ctx.beginPath();
-ctx.fillStyle = "#ffffffff";
-ctx.strokeStyle = "#000";
-ctx.moveTo(1293, 515);
-ctx.lineTo(1560, 515);
-ctx.lineTo(1560, 565);
-ctx.lineTo(1293, 565);
-ctx.lineTo(1293, 515);
-ctx.stroke();
-ctx.fill();
-ctx.closePath();
-
-function HighWayDrawLines(color) {
-
-	// ROAD FRAMES
-	// (1)
-	ctx.beginPath();
-	ctx.fillStyle = color;
-	ctx.strokeStyle = "#000";
-	ctx.moveTo(15, 515);
-	ctx.lineTo(292, 515);
-	ctx.lineTo(292, 565);
-	ctx.lineTo(15, 565);
-	ctx.lineTo(15, 515);
-	ctx.stroke();
-	ctx.fill();
-	ctx.closePath();
-
-	// (2)
-	ctx.beginPath();
-	ctx.fillStyle = color;
-	ctx.strokeStyle = "#000";
-	ctx.moveTo(342, 515);
-	ctx.lineTo(609, 515);
-	ctx.lineTo(609, 565);
-	ctx.lineTo(342, 565);
-	ctx.lineTo(342, 515);
-	ctx.stroke();
-	ctx.fill();
-	ctx.closePath();
-
-	// (3)
-	ctx.beginPath();
-	ctx.fillStyle = color;
-	ctx.strokeStyle = "#000";
-	ctx.moveTo(659, 515);
-	ctx.lineTo(926, 515);
-	ctx.lineTo(926, 565);
-	ctx.lineTo(659, 565);
-	ctx.lineTo(659, 515);
-	ctx.stroke();
-	ctx.fill();
-	ctx.closePath();
-
-	// (4)
-	ctx.beginPath();
-	ctx.fillStyle = color;
-	ctx.strokeStyle = "#000";
-	ctx.moveTo(976, 515);
-	ctx.lineTo(1243, 515);
-	ctx.lineTo(1243, 565);
-	ctx.lineTo(976, 565);
-	ctx.lineTo(976, 515);
-	ctx.stroke();
-	ctx.fill();
-	ctx.closePath();
-
-	// (5)
-	ctx.beginPath();
-	ctx.fillStyle = color;
-	ctx.strokeStyle = "#000";
-	ctx.moveTo(1293, 515);
-	ctx.lineTo(1560, 515);
-	ctx.lineTo(1560, 565);
-	ctx.lineTo(1293, 565);
-	ctx.lineTo(1293, 515);
-	ctx.stroke();
-	ctx.fill();
-	ctx.closePath();
-}
-
-document.getElementById('HighWayLinesColor1').onclick = function() {
-	HighWayDrawLines('#9FD5D1');
-}
-
-document.getElementById('HighWayLinesColor2').onclick = function() {
-	HighWayDrawLines('#0FFFFF');
-}
-
-document.getElementById('HighWayLinesColor3').onclick = function() {
-	HighWayDrawLines('#ffe4c4');
-}
-
-document.getElementById('HighWayLinesColor4').onclick = function() {
-	HighWayDrawLines('#002FA7');
-}
-
-document.getElementById('HighWayLinesColor5').onclick = function() {
-	HighWayDrawLines('#5f9ea0');
-}
-
-document.getElementById('HighWayLinesColor6').onclick = function() {
-	HighWayDrawLines('#A51C30');
-}
-
-document.getElementById('HighWayLinesColor7').onclick = function() {
-	HighWayDrawLines('#db7093');
-}
-
-document.getElementById('HighWayLinesColor8').onclick = function() {
-	HighWayDrawLines('#808000');
-}
-
-document.getElementById('HighWayLinesColor9').onclick = function() {
-	HighWayDrawLines('#f5fffa');
-}
-
-document.getElementById('HighWayLinesColor10').onclick = function() {
-	HighWayDrawLines('#cd853f');
-}
-
-document.getElementById('HighWayLinesColor11').onclick = function() {
-	HighWayDrawLines('#4169e1');
-}
-
-document.getElementById('HighWayLinesColor12').onclick = function() {
-	HighWayDrawLines('#00ff7f');
-}
-
-document.getElementById('HighWayLinesColor13').onclick = function() {
-	HighWayDrawLines('#FFDAB9');
-}
-
-document.getElementById('HighWayLinesColor14').onclick = function() {
-	HighWayDrawLines('#bc8f8f');
-}
-
-document.getElementById('HighWayLinesColor15').onclick = function() {
-	HighWayDrawLines('#90ee90');
-}
-
-document.getElementById('HighWayLinesColor16').onclick = function() {
-	HighWayDrawLines('#EF7F1A');
-}
-
-document.getElementById('HighWayLinesColor17').onclick = function() {
-	HighWayDrawLines('#B57EDC');
-}
-
-document.getElementById('HighWayLinesColor18').onclick = function() {
-	HighWayDrawLines('#1C4C96');
+        ctx.beginPath();
+        ctx.moveTo(cx1 - w1/2, y1);
+        ctx.lineTo(cx1 + w1/2, y1);
+        ctx.lineTo(cx2 + w2/2, y2);
+        ctx.lineTo(cx2 - w2/2, y2);
+        ctx.fill();
+    }
 }
