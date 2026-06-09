@@ -1,36 +1,26 @@
-# Landscapes_Canvas
-## _Geometric designs based on natural landscapes using `Canvas`_
+# Landscapes_Canvas 🎨
+_Geometric designs based on natural landscapes using HTML5 `Canvas` and `JavaScript`._
 
-## Starting 🎨
-_it is made up of two branches which each have a special design but having the same base (Mountains)_.
-It has a similarity with the project [0.9-HighWay-ColorStreet](https://github.com/Trex-Codes/0.9-HighWay-ColorStreet) which has a similar aesthetic with `Canvas`
+## Starting 🚀
+This project explores different landscape designs, all sharing a foundational geometric structure using `Canvas`. 
+It has an aesthetic similarity with the project [0.9-HighWay-ColorStreet](https://github.com/Trex-Codes/0.9-HighWay-ColorStreet), utilizing similar rendering techniques.
 
-## Deployment 🔌
-_Each design has the use of Canvas in addition to using gradient for the colors or tones of each structure, using `JS`_
+![Highway](Assets/Highway_color.png)
 
-1. **Mountains_Canvas**
-_This branch has a basic design about the landscape, only the minimalist structure of five mountains each with a decoration at the top and a gradient of various colors.
-and in the lower zone it is a gradient on a type of sea or water under them_
+## Deployments & Designs 🖼️
+_Each design utilizes Canvas drawing contexts, applying intricate gradients and RGBA values to bring structures to life using pure JS._
 
-![img](https://github.com/Trex-Codes/0.12-Landscapes_Canvas/blob/master/Assets/Mountains_Canvas.png)
+### 1. Mountains Canvas
+_A minimalist landscape structure featuring five mountains, each with top decorations and unique color gradients, set above a stylized water gradient._
 
-2. **Forest_Canvas**
-_This branch has a more specialized and complex landscape design since it has straight and curved mountains, it also has trees of different shapes and sizes,
-and at the bottom is a small lake. All colors were made by means of gradients or RGBA_
+![Mountains Canvas](Assets/Mountains_Canvas.png)
 
-![img](https://github.com/Trex-Codes/0.12-Landscapes_Canvas/blob/master/Assets/Forest_Canvas.png)
+### 2. Forest Canvas
+_A more specialized and complex landscape. It features both straight and curved mountains, varied tree shapes and sizes, and a small lake at the bottom. All colors are crafted via gradients._
 
-3. **Sea_Island**
-_An island context giving each one a specific characteristic within the website, The design is based on a 3x3 puzzle in which it is composed of a small reef, then a sand island and finally a palm tree._
+![Forest Canvas](Assets/Forest_Canvas.png)
 
-![img](https://github.com/Trex-Codes/0.12-Landscapes_Canvas/blob/master/Assets/Island.png)
+### 3. Sea Island
+_An island context giving each element a specific characteristic within the website. The design is based on a 3x3 puzzle structure composed of a small reef, a sand island, and finally a palm tree._
 
-## Author(s) ✒️
-- _Initial Work, Documentation_ [Trex-Codes](https://github.com/Trex-Codes)
-
-## Contributions 🖇️
-_for now I do not believe that there is a possibility of modifying this project so that it will remain "down" until a next amendment. 
-any modification is possible as it is openSource_ 💬
-
-## License 📄
-_This project is MIT licensed, as found in the LICENSE file. you can look from here_ [LICENSE.md](https://github.com/Trex-Codes/0.12-Landscapes_Canvas/blob/master/LICENSE)
+![Sea Island](Assets/Sea_Island.png)
